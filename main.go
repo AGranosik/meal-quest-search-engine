@@ -17,6 +17,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	db.Migrator()
 	db.AutoMigrate(&database.Restaurant{})
 	fmt.Println("Up & Running.")
 }
