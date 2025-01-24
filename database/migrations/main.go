@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"meal-quest/search-engine/database"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,8 +15,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	db.Migrator()
 	db.Exec("CREATE DATABASE search_engine;")
-	db.AutoMigrate(&database.Restaurant{})
-	fmt.Println("Up & Running.")
+
+	searchEngine, err := gorm.Open(postgres.Open("postgres://admin:S3cret@localhost:5432/search_engine"), &gorm.Config{})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	searchEngine.Migrator()
+	searchEngine.Exec("CREATE EXTENSION postgis;")
+	db.AutoMigrate(&Restaurant)
+
 }
