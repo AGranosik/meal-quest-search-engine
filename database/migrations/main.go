@@ -23,7 +23,26 @@ func main() {
 		log.Fatalln(err)
 	}
 	searchEngine.Migrator()
-	searchEngine.Exec("CREATE EXTENSION postgis;")
-	db.AutoMigrate(&Restaurant)
+	tx := searchEngine.Exec("CREATE EXTENSION postgis;")
 
+	if tx.Error != nil {
+		log.Fatalln(tx.Error)
+	}
+	tx = searchEngine.Exec("SELECT PostGIS_Version();")
+
+	if tx.Error != nil {
+		log.Fatalln(tx.Error)
+	}
+
+	//restaurant
+	tx = searchEngine.Exec(`
+        CREATE TABLE IF NOT EXISTS restaurants (
+		restaurant_id SERIAL PRIMARY KEY,
+		name VARCHAR(255) NOT NULL,
+		geom GEOGRAPHY(Point, 4326) NOT NULL
+        );
+    `)
+	if tx.Error != nil {
+		log.Fatalln(tx.Error)
+	}
 }

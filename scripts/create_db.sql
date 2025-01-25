@@ -1,2 +1,0 @@
-CREATE DATABASE search_engine;
-CREATE EXTENSION postgis;
