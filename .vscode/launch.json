@@ -19,7 +19,8 @@
             "program": "${workspaceRoot}/database/migrations",
             "env":{
                 "DATABASE_SERVER": "postgres://admin:S3cret@localhost:5432",
-                "SEARCH_ENGINE_DATABASE": "search_engine"
+                "SEARCH_ENGINE_DATABASE": "search_engine",
+                "RABBITMQ": "amqp://guest:guest@localhost:5672/"
             }
         }
     ]
