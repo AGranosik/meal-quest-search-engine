@@ -9,7 +9,12 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceRoot}"
+            "program": "${workspaceRoot}",
+            "env":{
+                "DATABASE_SERVER": "postgres://admin:S3cret@localhost:5432",
+                "SEARCH_ENGINE_DATABASE": "search_engine",
+                "RABBITMQ": "amqp://guest:guest@localhost:5672/"
+            }
         },
         {
             "name": "migrations",
