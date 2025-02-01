@@ -1,13 +1,14 @@
-package serviceBus
+package rabbitMq
 
 import (
 	"log"
 	"os"
+	"search-engine/infrastructure/serviceBus"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type RabbitMq struct {
+type RabbitMqServiceBusProvider struct {
 	connectionString string
 	connection       *amqp.Connection
 	channel          *amqp.Channel
@@ -15,18 +16,18 @@ type RabbitMq struct {
 
 // error handlling
 // order should't affect creation
-func CreateRabbitMq() ServiceBusProvider {
+func CreateRabbitMq() serviceBus.ServiceBusProvider {
 	connectionString := os.Getenv("RABBITMQ")
 	if connectionString == "" {
 		log.Panicln("connection string cannot be empty")
 	}
 
-	return &RabbitMq{
+	return &RabbitMqServiceBusProvider{
 		connectionString: connectionString,
 	}
 }
 
-func (rabbit *RabbitMq) Start() ServiceBusProvider {
+func (rabbit *RabbitMqServiceBusProvider) Start() serviceBus.ServiceBusProvider {
 	conn, err := amqp.Dial(rabbit.connectionString)
 
 	if err != nil {
@@ -43,7 +44,7 @@ func (rabbit *RabbitMq) Start() ServiceBusProvider {
 	return rabbit
 }
 
-func (rabbit *RabbitMq) WithExchange(exchangeName string) ServiceBusProvider {
+func (rabbit *RabbitMqServiceBusProvider) WithExchange(exchangeName string) serviceBus.ServiceBusProvider {
 
 	if rabbit.channel == nil {
 		rabbit.Start()
@@ -63,7 +64,7 @@ func (rabbit *RabbitMq) WithExchange(exchangeName string) ServiceBusProvider {
 	}
 	return rabbit
 }
-func (rabbit *RabbitMq) WithQueue(queueName string, exchange string) ServiceBusProvider {
+func (rabbit *RabbitMqServiceBusProvider) WithQueue(queueName string, exchange string) serviceBus.ServiceBusProvider {
 	if rabbit.channel == nil {
 		rabbit.Start()
 	}
@@ -97,7 +98,7 @@ func (rabbit *RabbitMq) WithQueue(queueName string, exchange string) ServiceBusP
 
 // some consumer entity to handle
 // there should be some exchange interface which will have exchange name already
-func (rabbit *RabbitMq) Consume() ServiceBusProvider {
+func (rabbit *RabbitMqServiceBusProvider) Consume() serviceBus.ServiceBusProvider {
 	msgs, err := rabbit.channel.Consume(
 		"search-engine",     // queue
 		"search-engine-app", // consumer
@@ -120,7 +121,7 @@ func (rabbit *RabbitMq) Consume() ServiceBusProvider {
 	return rabbit
 }
 
-func (rabbit *RabbitMq) Stop() {
+func (rabbit *RabbitMqServiceBusProvider) Stop() {
 	rabbit.connection.Close()
 	rabbit.channel.Close()
 }

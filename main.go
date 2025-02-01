@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"meal-quest/search-engine/infrastructure/serviceBus"
 	"os"
+	"search-engine/infrastructure/serviceBus/rabbitMq"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,7 +13,7 @@ import (
 func main() {
 	// db, err := createDbConnection()
 
-	rabbit := serviceBus.CreateRabbitMq()
+	rabbit := rabbitMq.CreateRabbitMq()
 
 	rabbit = rabbit.Start().
 		WithExchange("restaurant.changes").

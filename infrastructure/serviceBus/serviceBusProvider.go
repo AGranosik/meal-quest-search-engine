@@ -1,6 +1,5 @@
 package serviceBus
 
-// will be extendended if needed
 type ServiceBusProvider interface {
 	Start() ServiceBusProvider
 	Consume() ServiceBusProvider
