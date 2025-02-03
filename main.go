@@ -18,7 +18,6 @@ func main() {
 	rabbit = rabbit.Start().
 		WithExchange("restaurant.changes").
 		WithQueue("search-engine", "restaurant.changes")
-
 	rabbit.Consume()
 	fmt.Println("Up & Running.")
 

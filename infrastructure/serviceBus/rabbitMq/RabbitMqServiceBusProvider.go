@@ -106,7 +106,7 @@ func (rabbit *RabbitMqServiceBusProvider) Consume() serviceBus.ServiceBusProvide
 		false,               // exclusive
 		false,               // no-local
 		false,               // no-wait
-		nil,                 // args
+		nil,
 	)
 
 	if err != nil {
