@@ -1,6 +1,8 @@
 package rabbitMq
 
-import "search-engine/infrastructure/serviceBus"
+import (
+	"search-engine/infrastructure/serviceBus"
+)
 
 const (
 	EXCHANGE_NAME = "restaurant.changes"
@@ -8,12 +10,18 @@ const (
 )
 
 type RestaurantChangesConsumer struct {
+	exchangeName string
+	queueName    string
 }
 
-func NewConsumer() *serviceBus.ServiceBusConsumer {
-	return &RestaurantChangesConsumer{}
+// can reate cfg struct later
+func NewConsumer(exchangeName string, queueName string, busService serviceBus.ServiceBusProvider) serviceBus.ServiceBusConsumer {
+	return &RestaurantChangesConsumer{
+		exchangeName: exchangeName,
+		queueName:    queueName,
+	}
 }
 
-func (consumer *serviceBus.ServiceBusConsumer) Consume() {
-
+func (consumer *RestaurantChangesConsumer) Consume(body []byte) error {
+	return nil
 }

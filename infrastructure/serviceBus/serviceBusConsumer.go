@@ -1,7 +1,7 @@
 package serviceBus
 
 type ServiceBusConsumer interface {
-	Consume()
+	Consume(body []byte) error
 }
 
 // some types of messages consumer
