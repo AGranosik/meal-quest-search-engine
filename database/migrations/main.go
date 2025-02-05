@@ -1,6 +1,6 @@
 package main
 
-import configration "search-engine/database/migrations/configurations"
+import configration "main/database/migrations/configurations"
 
 func main() {
 	configration.ConfigureDatabase()

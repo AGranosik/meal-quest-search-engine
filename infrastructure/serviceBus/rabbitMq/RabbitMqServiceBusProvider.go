@@ -2,8 +2,8 @@ package rabbitMq
 
 import (
 	"log"
+	"main/infrastructure/serviceBus/interfaces"
 	"os"
-	"search-engine/infrastructure/serviceBus"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -11,12 +11,9 @@ import (
 type RabbitMqServiceBusProvider struct {
 	connectionString string
 	connection       *amqp.Connection
-	channel          *amqp.Channel
 }
 
-// error handlling
-// order should't affect creation
-func CreateRabbitMq() serviceBus.ServiceBusProvider {
+func CreateRabbitMq() interfaces.ServiceBusProvider {
 	connectionString := os.Getenv("RABBITMQ")
 	if connectionString == "" {
 		log.Panicln("connection string cannot be empty")
@@ -27,7 +24,7 @@ func CreateRabbitMq() serviceBus.ServiceBusProvider {
 	}
 }
 
-func (rabbit *RabbitMqServiceBusProvider) Start() serviceBus.ServiceBusProvider {
+func (rabbit *RabbitMqServiceBusProvider) Start() interfaces.ServiceBusProvider {
 	conn, err := amqp.Dial(rabbit.connectionString)
 
 	if err != nil {
@@ -35,21 +32,16 @@ func (rabbit *RabbitMqServiceBusProvider) Start() serviceBus.ServiceBusProvider 
 	}
 
 	rabbit.connection = conn
-	ch, err := conn.Channel()
+	return rabbit
+}
+
+func (rabbit *RabbitMqServiceBusProvider) configureExchange(exchangeName string) *amqp.Channel {
+	channel, err := rabbit.connection.Channel()
 
 	if err != nil {
 		log.Panicln(err)
 	}
-	rabbit.channel = ch
-	return rabbit
-}
-
-func (rabbit *RabbitMqServiceBusProvider) WithExchange(exchangeName string) serviceBus.ServiceBusProvider {
-
-	if rabbit.channel == nil {
-		rabbit.Start()
-	}
-	err := rabbit.channel.ExchangeDeclare(
+	err = channel.ExchangeDeclare(
 		exchangeName,
 		"fanout",
 		true,
@@ -62,14 +54,11 @@ func (rabbit *RabbitMqServiceBusProvider) WithExchange(exchangeName string) serv
 	if err != nil {
 		log.Panicln(err)
 	}
-	return rabbit
+	return channel
 }
-func (rabbit *RabbitMqServiceBusProvider) WithQueue(queueName string, exchange string) serviceBus.ServiceBusProvider {
-	if rabbit.channel == nil {
-		rabbit.Start()
-	}
+func (rabbit *RabbitMqServiceBusProvider) configureQueue(channel *amqp.Channel, queueName string, exchange string) {
 
-	queue, err := rabbit.channel.QueueDeclare(
+	queue, err := channel.QueueDeclare(
 		queueName,
 		true,
 		false,
@@ -82,7 +71,7 @@ func (rabbit *RabbitMqServiceBusProvider) WithQueue(queueName string, exchange s
 		log.Panicln()
 	}
 
-	err = rabbit.channel.QueueBind(
+	err = channel.QueueBind(
 		queue.Name,
 		"",
 		exchange,
@@ -93,19 +82,21 @@ func (rabbit *RabbitMqServiceBusProvider) WithQueue(queueName string, exchange s
 	if err != nil {
 		log.Panicln(err)
 	}
-	return rabbit
 }
 
 // some consumer entity to handle
 // there should be some exchange interface which will have exchange name already
-func (rabbit *RabbitMqServiceBusProvider) Consume() serviceBus.ServiceBusProvider {
-	msgs, err := rabbit.channel.Consume(
-		"search-engine",     // queue
-		"search-engine-app", // consumer
-		true,                // auto-ack
-		false,               // exclusive
-		false,               // no-local
-		false,               // no-wait
+func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBusConsumer) interfaces.ServiceBusProvider {
+	channel := rabbit.configureExchange(consumer.GetExchange())
+	rabbit.configureQueue(channel, consumer.GetExchange(), consumer.GetQueueName())
+
+	msgs, err := channel.Consume(
+		consumer.GetQueueName(), // queue
+		"search-engine-app",     // consumer
+		true,                    // auto-ack
+		false,                   // exclusive
+		false,                   // no-local
+		false,                   // no-wait
 		nil,
 	)
 
@@ -115,13 +106,13 @@ func (rabbit *RabbitMqServiceBusProvider) Consume() serviceBus.ServiceBusProvide
 
 	go func() {
 		for d := range msgs {
-			log.Printf(" [x] %s", d.Body)
+			consumer.Consume(d.Body)
 		}
 	}()
+
 	return rabbit
 }
 
 func (rabbit *RabbitMqServiceBusProvider) Stop() {
 	rabbit.connection.Close()
-	rabbit.channel.Close()
 }

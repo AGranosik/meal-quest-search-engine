@@ -1,7 +1,10 @@
-package serviceBus
+package interfaces
 
+//somehow abstract that to be more generic
 type ServiceBusConsumer interface {
 	Consume(body []byte) error
+	GetExchange() string
+	GetQueueName() string
 }
 
 // some types of messages consumer
