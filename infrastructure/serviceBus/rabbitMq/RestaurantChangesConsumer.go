@@ -13,7 +13,7 @@ type RestaurantChangesConsumer struct {
 }
 
 // can reate cfg struct later
-func NewConsumer(exchangeName string, queueName string, busService interfaces.ServiceBusProvider) interfaces.ServiceBusConsumer {
+func NewConsumer(exchangeName string, queueName string) interfaces.ServiceBusConsumer {
 	return &RestaurantChangesConsumer{
 		exchangeName: exchangeName,
 		queueName:    queueName,

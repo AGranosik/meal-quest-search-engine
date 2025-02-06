@@ -84,11 +84,10 @@ func (rabbit *RabbitMqServiceBusProvider) configureQueue(channel *amqp.Channel, 
 	}
 }
 
-// some consumer entity to handle
-// there should be some exchange interface which will have exchange name already
 func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBusConsumer) interfaces.ServiceBusProvider {
+	//instead exchange - queue there could be some kind of 'group' and 'type'
 	channel := rabbit.configureExchange(consumer.GetExchange())
-	rabbit.configureQueue(channel, consumer.GetExchange(), consumer.GetQueueName())
+	rabbit.configureQueue(channel, consumer.GetQueueName(), consumer.GetExchange())
 
 	msgs, err := channel.Consume(
 		consumer.GetQueueName(), // queue

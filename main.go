@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"main/infrastructure/serviceBus/rabbitMq"
+	"main/infrastructure/serviceBus"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -13,19 +13,13 @@ import (
 func main() {
 	// db, err := createDbConnection()
 
-	rabbit := rabbitMq.CreateRabbitMq()
-	log.Println(rabbit)
-
-	// rabbit = rabbit.Start().
-	// 	WithExchange("restaurant.changes").
-	// 	WithQueue("search-engine", "restaurant.changes")
-	// rabbit.Consume()
+	serviceBus.ConfigureServiceBusProvider()
 	fmt.Println("Up & Running.")
 
-	// var forever chan struct{}
+	var forever chan struct{}
 
 	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
-	// <-forever
+	<-forever
 }
 
 func createDbConnection() (db *gorm.DB, err error) {
