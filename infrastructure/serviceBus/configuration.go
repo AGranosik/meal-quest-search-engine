@@ -13,6 +13,6 @@ func ConfigureServiceBusProvider() {
 }
 
 func configureRestaurantChangesConsumption(serviceBus interfaces.ServiceBusProvider) {
-	consumer := rabbitMq.NewConsumer("restaurant.changes", "search-engine")
+	consumer := rabbitMq.NewConsumer("restaurants.changes", "search-engine")
 	serviceBus.Consume(consumer)
 }

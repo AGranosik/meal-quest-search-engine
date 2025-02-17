@@ -92,7 +92,7 @@ func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBus
 	msgs, err := channel.Consume(
 		consumer.GetQueueName(), // queue
 		"search-engine-app",     // consumer
-		true,                    // auto-ack
+		false,                   // auto-ack
 		false,                   // exclusive
 		false,                   // no-local
 		false,                   // no-wait
@@ -105,7 +105,12 @@ func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBus
 
 	go func() {
 		for d := range msgs {
-			consumer.Consume(d.Body)
+			err = consumer.Consume(d.Body)
+			if err == nil {
+				d.Ack(false)
+			} else {
+				d.Nack(false, false)
+			}
 		}
 	}()
 
