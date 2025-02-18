@@ -11,9 +11,12 @@ import (
 )
 
 func main() {
-	// db, err := createDbConnection()
+	db, err := createDbConnection()
 
-	serviceBus.ConfigureServiceBusProvider()
+	if err != nil {
+		log.Panic(err)
+	}
+	serviceBus.ConfigureServiceBusProvider(db)
 	fmt.Println("Up & Running.")
 
 	var forever chan struct{}

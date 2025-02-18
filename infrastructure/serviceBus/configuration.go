@@ -3,16 +3,19 @@ package serviceBus
 import (
 	"main/infrastructure/serviceBus/interfaces"
 	"main/infrastructure/serviceBus/rabbitMq"
+
+	"gorm.io/gorm"
 )
 
-func ConfigureServiceBusProvider() {
+// refactor
+func ConfigureServiceBusProvider(db *gorm.DB) {
 	rabbit := rabbitMq.CreateRabbitMq()
 
 	rabbit.Start()
-	configureRestaurantChangesConsumption(rabbit)
+	configureRestaurantChangesConsumption(rabbit, db)
 }
 
-func configureRestaurantChangesConsumption(serviceBus interfaces.ServiceBusProvider) {
-	consumer := rabbitMq.NewConsumer("restaurants.changes", "search-engine")
+func configureRestaurantChangesConsumption(serviceBus interfaces.ServiceBusProvider, db *gorm.DB) {
+	consumer := rabbitMq.NewConsumer("restaurants.changes", "search-engine", db)
 	serviceBus.Consume(consumer)
 }
