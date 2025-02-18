@@ -25,8 +25,8 @@ type RabbitMqMessage struct {
 
 type RestaurantQueueModel struct {
 	Name  string  `json:"name"`
-	XAxis float64 `json:"xAxis`
-	YAxis float64 `json:yAxis`
+	XAxis float64 `json:"xAxis"`
+	YAxis float64 `json:"yAxis"`
 }
 
 // can reate cfg struct later
@@ -43,7 +43,7 @@ func (consumer *RestaurantChangesConsumer) Consume(body []byte) error {
 	json.Unmarshal(body, &msg)
 
 	restaurantDb := convertToRestaurant(msg.Message)
-	consumer.database.Table("restaurants").Create(&restaurantDb)
+	consumer.database.Create(&restaurantDb)
 	return nil
 }
 

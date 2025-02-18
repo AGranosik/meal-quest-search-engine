@@ -3,6 +3,7 @@ package configration
 import (
 	"fmt"
 	"log"
+	"main/database"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -30,13 +31,13 @@ func MigrateModels() {
 	}
 
 	//restaurant
-	tx = searchEngine.Exec(`
-        CREATE TABLE IF NOT EXISTS restaurants (
+	tx = searchEngine.Exec(fmt.Sprintf(`
+        CREATE TABLE IF NOT EXISTS %s (
 		restaurant_id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		geom GEOGRAPHY(Point, 4326) NOT NULL
         );
-    `)
+    `, database.RestaurantTableName))
 	if tx.Error != nil {
 		log.Fatalln(tx.Error)
 	}

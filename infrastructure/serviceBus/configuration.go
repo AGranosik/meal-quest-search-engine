@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// refactor
 func ConfigureServiceBusProvider(db *gorm.DB) {
 	rabbit := rabbitMq.CreateRabbitMq()
 
