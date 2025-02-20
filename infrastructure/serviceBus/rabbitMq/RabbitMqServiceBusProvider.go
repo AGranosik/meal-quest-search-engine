@@ -89,6 +89,12 @@ func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBus
 	channel := rabbit.configureExchange(consumer.GetExchange())
 	rabbit.configureQueue(channel, consumer.GetQueueName(), consumer.GetExchange())
 
+	err := channel.Qos(1, 0, true)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
 	msgs, err := channel.Consume(
 		consumer.GetQueueName(), // queue
 		"search-engine-app",     // consumer
