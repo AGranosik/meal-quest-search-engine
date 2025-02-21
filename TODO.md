@@ -1,3 +1,3 @@
 [] rabbitmq observe
 [] dead letter
-[] consume 10 messages at time
+[] add restaurant address in restaurant db
