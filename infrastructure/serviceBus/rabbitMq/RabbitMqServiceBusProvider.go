@@ -35,121 +35,6 @@ func (rabbit *RabbitMqServiceBusProvider) Start() interfaces.ServiceBusProvider 
 	return rabbit
 }
 
-func (rabbit *RabbitMqServiceBusProvider) configureExchange(exchangeName string) *amqp.Channel {
-	channel, err := rabbit.connection.Channel()
-
-	if err != nil {
-		log.Panicln(err)
-	}
-	err = channel.ExchangeDeclare(
-		exchangeName,
-		"fanout",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	err = channel.ExchangeDeclare(
-		exchangeName+".dlx",
-		"fanout",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	return channel
-}
-
-// refactor
-func (rabbit *RabbitMqServiceBusProvider) configureQueue(channel *amqp.Channel, queueName string, exchange string) {
-
-	// _, err := channel.QueueDeclare(
-	// 	queueName,
-	// 	true,
-	// 	false,
-	// 	false,
-	// 	false,
-	// 	nil,
-	// )
-
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-
-	// err = channel.QueueBind(
-	// 	queueName,
-	// 	"",
-	// 	exchange,
-	// 	false,
-	// 	nil,
-	// )
-
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-
-	_, err := channel.QueueDeclare(
-		queueName+".dlx",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	err = channel.QueueBind(
-		queueName+".dlx",
-		"",
-		exchange+".dlx",
-		false,
-		nil,
-	)
-	if err != nil {
-		log.Panicln(err)
-	}
-	_, err = channel.QueueDeclare(
-		queueName,
-		true,
-		false,
-		false,
-		false,
-		amqp.Table{
-			"x-dead-letter-exchange": exchange + ".dlx",
-		},
-	)
-
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	err = channel.QueueBind(
-		queueName,
-		"",
-		exchange,
-		false,
-		nil,
-	)
-	if err != nil {
-		log.Panicln(err)
-	}
-}
-
 func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBusConsumer) interfaces.ServiceBusProvider {
 
 	channel := rabbit.configureExchange(consumer.GetExchange())
@@ -177,19 +62,12 @@ func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBus
 
 	go func() {
 		for d := range msgs {
-			// deadletter-exchange to ten sam exchangr wiec się zapętla
 			err = consumer.Consume(d.Body)
-
-			err = d.Nack(false, false)
-
-			if err != nil {
-				log.Panicln(err)
+			if err == nil {
+				d.Ack(false)
+			} else {
+				d.Nack(false, false)
 			}
-			// if err == nil {
-			// 	d.Ack(false)
-			// } else {
-			// 	d.Nack(false, false)
-			// }
 		}
 	}()
 
@@ -198,4 +76,68 @@ func (rabbit *RabbitMqServiceBusProvider) Consume(consumer interfaces.ServiceBus
 
 func (rabbit *RabbitMqServiceBusProvider) Stop() {
 	rabbit.connection.Close()
+}
+
+func (rabbit *RabbitMqServiceBusProvider) configureExchange(exchangeName string) *amqp.Channel {
+	channel, err := rabbit.connection.Channel()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	createExchange(exchangeName, channel)
+	createExchange(exchangeName+".dlx", channel)
+	return channel
+}
+
+func (rabbit *RabbitMqServiceBusProvider) configureQueue(channel *amqp.Channel, queueName string, exchange string) {
+
+	dlxQueue := queueName + ".dlx"
+	dlxEx := exchange + ".dlx"
+
+	createQueue(channel, dlxQueue, dlxEx, nil)
+	createQueue(channel, queueName, exchange, amqp.Table{
+		"x-dead-letter-exchange": dlxEx,
+	})
+}
+
+func createExchange(name string, channel *amqp.Channel) {
+	err := channel.ExchangeDeclare(
+		name,
+		"fanout",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+}
+
+func createQueue(channel *amqp.Channel, queueName string, exchange string, args amqp.Table) {
+	_, err := channel.QueueDeclare(
+		queueName,
+		true,
+		false,
+		false,
+		false,
+		args,
+	)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	err = channel.QueueBind(
+		queueName,
+		"",
+		exchange,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Panicln(err)
+	}
 }
