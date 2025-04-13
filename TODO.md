@@ -1,8 +1,12 @@
-[] rabbitmq observe
+MAIN PROBLEMS TO SOLVE
+[] consume menu queue 
 [] search engine api based on localization only
 [] include localization & slected meal prefernce
-[] test performance on millions of meals? checc for indexies etc
-[] improve performance of data seed
-[] consume menu queue 
-[] unique categories
+
+[] START DEVELOP MOBILE APP
+
+
 [] tests performance
+[] improve performance of data seed
+[] test performance on millions of meals? checc for indexies etc
+[] rabbitmq observe
