@@ -6,6 +6,7 @@ MAIN PROBLEMS TO SOLVE
 [] START DEVELOP MOBILE APP
 
 
+[] simplify creations
 [] tests performance
 [] improve performance of data seed
 [] test performance on millions of meals? checc for indexies etc

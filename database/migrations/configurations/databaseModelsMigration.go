@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"main/database"
+	"main/database/migrations/schemas"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -41,4 +42,6 @@ func MigrateModels() {
 	if tx.Error != nil {
 		log.Fatalln(tx.Error)
 	}
+
+	schemas.MigrateMenu(searchEngine)
 }
