@@ -18,7 +18,41 @@ type MenuMessage struct {
 }
 
 type MenuQueueModel struct {
-	RestaurantId int `json:"restaurantId"`
+	RestaurantId int       `json:"restaurantId"`
+	Menu         MenuModel `json:"menu"`
+}
+
+type MenuModel struct {
+	Name   NotEmptyString `json:"name"`
+	Groups []GroupModel   `json:"groups"`
+}
+
+type GroupModel struct {
+	GroupName NotEmptyString `json:"GroupName"`
+	Meals     []MealModel    `json:"meals"`
+}
+
+type MealModel struct {
+	Name        NotEmptyString    `json:"name"`
+	Price       float32           `json:"price"`
+	Categories  []CategoryModel   `json:"categories"`
+	Ingredients []IngredientModel `json:"ingredients"`
+}
+
+type IngredientModel struct {
+	Name NameValue `json:"name"`
+}
+
+type CategoryModel struct {
+	Value NameValue `json:"value"`
+}
+
+type NotEmptyString struct {
+	Value NameValue `json:"value"`
+}
+
+type NameValue struct {
+	Value string `json:"value"`
 }
 
 // Consume implements interfaces.ServiceBusConsumer.
