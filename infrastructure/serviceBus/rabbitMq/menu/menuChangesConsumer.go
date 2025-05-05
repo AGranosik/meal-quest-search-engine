@@ -13,6 +13,10 @@ type MenuChangesConsumer struct {
 	database     *gorm.DB
 }
 
+type MenuMessage struct {
+	Message MenuQueueModel `json:"message"`
+}
+
 type MenuQueueModel struct {
 	RestaurantId int               `json:"restaurantId"`
 	Name         string            `json:"name"`
@@ -28,6 +32,7 @@ type MealQueueModel struct {
 	Categories  []CategoryQueueModel   `json:"categories"`
 	Ingredients []IngredientQueueModel `json:"ingredients"`
 	Name        string                 `json:"name"`
+	Price       string                 `json:"price"`
 }
 
 type IngredientQueueModel struct {
@@ -41,44 +46,11 @@ type CategoryQueueModel struct {
 
 // Consume implements interfaces.ServiceBusConsumer.
 func (m *MenuChangesConsumer) Consume(body []byte) error {
-	var msg MenuQueueModel
+	var msg MenuMessage
 	json.Unmarshal(body, &msg)
 
 	return nil
 }
-
-// func convertToMenu(model MenuQueueModel) database.Menu {
-
-// 	return database.Menu{
-// 		ID:           model.Id.Value,
-// 		RestaurantID: uint(model.RestaurantId),
-// 	}
-// }
-
-// func convertGroups(queueGroups []GroupModel) database.Group {
-// 	result := make([]database.Group, len(queueGroups))
-// 	for i := 0; i < len(queueGroups); i++ {
-// 		group := queueGroups[i]
-
-// 	}
-// }
-
-// func convertMeals(queueMeals []MealModel) database.Meal {
-// 	result := make([]database.Meal, len(queueMeals))
-// 	for i := 0; i < len(queueMeals); i++ {
-
-// 	}
-// }
-
-// func convertCategories(queueCategories []CategoryModel) database.Category{
-// 	result := make([]database.Category, len(queueCategories))
-// 	for i := 0; i < len(queueCategories); i++ {
-// 		category := queueCategories[i]
-// 		result[i] = database.Category{
-// 			// ID: category.,
-// 		}
-// 	}
-// }
 
 // TODO: REFACTOR
 func (m *MenuChangesConsumer) GetExchange() string {
