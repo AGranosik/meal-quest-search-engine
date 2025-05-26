@@ -3,7 +3,7 @@ package database
 const RestaurantTableName = "restaurants"
 
 type Restaurant struct {
-	RestaurantId uint   `gorm:"primaryKey;autoIncrement"`
+	RestaurantId uint   `gorm:"primaryKey"`
 	Name         string `gorm:"size:255;not null" json:"name"` // Maps to name VARCHAR(255) NOT NULL
 	Geom         string `gorm:"type:GEOGRAPHY(Point,4326);not null" json:"geom"`
 }

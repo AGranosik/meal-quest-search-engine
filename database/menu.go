@@ -38,7 +38,7 @@ type Category struct {
 }
 
 type Ingredient struct {
-	ID    uint   `gorm:"primaryKey"`
-	Name  string `gorm:"uniqueIndex"`
+	ID    uint `gorm:"primaryKey"`
+	Name  string
 	Meals []Meal `gorm:"many2many:meal_ingredients;"`
 }

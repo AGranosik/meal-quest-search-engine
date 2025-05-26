@@ -24,9 +24,10 @@ type RabbitMqMessage struct {
 }
 
 type RestaurantQueueModel struct {
-	Name  string  `json:"name"`
-	XAxis float64 `json:"xAxis"`
-	YAxis float64 `json:"yAxis"`
+	ResutaurantId int     `json:"restaurantId"`
+	Name          string  `json:"name"`
+	XAxis         float64 `json:"xAxis"`
+	YAxis         float64 `json:"yAxis"`
 }
 
 // can reate cfg struct later
@@ -57,7 +58,8 @@ func (consumer *RestaurantChangesConsumer) GetQueueName() string {
 func convertToRestaurant(model RestaurantQueueModel) database.Restaurant {
 	geom := fmt.Sprintf("SRID=4326;POINT(%f %f)", model.XAxis, model.YAxis)
 	return database.Restaurant{
-		Name: model.Name,
-		Geom: geom,
+		RestaurantId: uint(model.ResutaurantId),
+		Name:         model.Name,
+		Geom:         geom,
 	}
 }
