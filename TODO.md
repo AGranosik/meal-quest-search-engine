@@ -1,6 +1,6 @@
 MAIN PROBLEMS TO SOLVE
-[] consume menu queue 
 [] search engine api based on localization only
+[] based on city
 [] include localization & selected meal prefernce
 
 [] START DEVELOP MOBILE APP

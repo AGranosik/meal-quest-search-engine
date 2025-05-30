@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"main/api"
 	"main/infrastructure/serviceBus"
 	"os"
 
@@ -19,10 +20,12 @@ func main() {
 	serviceBus.ConfigureServiceBusProvider(db)
 	fmt.Println("Up & Running.")
 
-	var forever chan struct{}
+	// var forever chan struct{}
 
 	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
-	<-forever
+	// <-forever
+
+	api.ConfigureRestaurantsEndpoints()
 }
 
 func createDbConnection() (db *gorm.DB, err error) {
