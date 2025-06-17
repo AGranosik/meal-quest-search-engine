@@ -25,7 +25,7 @@ func main() {
 	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
 	// <-forever
 
-	api.ConfigureRestaurantsEndpoints()
+	api.ConfigureRestaurantsEndpoints(db)
 }
 
 func createDbConnection() (db *gorm.DB, err error) {
