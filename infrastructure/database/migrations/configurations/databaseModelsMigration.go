@@ -3,8 +3,8 @@ package configration
 import (
 	"fmt"
 	"log"
-	"main/database"
-	"main/database/migrations/schemas"
+	"main/infrastructure/database"
+	"main/infrastructure/database/migrations/schemas"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -32,10 +32,14 @@ func MigrateModels() {
 	}
 
 	//restaurant
+	//creates street name twice for some reason
 	tx = searchEngine.Exec(fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %s (
 		restaurant_id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
+		description VARCHAR(3000) NOT NULL,
+		streetName VARCHAR(430) NOT NULL,
+		city VARCHAR(420) NOT NULL,
 		geom GEOGRAPHY(Point, 4326) NOT NULL
         );
     `, database.RestaurantTableName))

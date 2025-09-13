@@ -1,7 +1,7 @@
 package schemas
 
 import (
-	"main/database"
+	"main/infrastructure/database"
 
 	"gorm.io/gorm"
 )

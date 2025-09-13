@@ -1,5 +1,4 @@
 MAIN PROBLEMS TO SOLVE
-[] search engine api based on localization only
 [] based on city
 [] include localization & selected meal prefernce
 

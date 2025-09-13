@@ -3,7 +3,7 @@ package menuBusService
 import (
 	"encoding/json"
 	"fmt"
-	"main/database"
+	"main/infrastructure/database"
 	"main/infrastructure/serviceBus/interfaces"
 	"strconv"
 
@@ -57,6 +57,7 @@ func (m *MenuChangesConsumer) Consume(body []byte) error {
 	result := m.database.Create(&dbModel)
 	if result.Error != nil {
 		fmt.Errorf(result.Error.Error())
+		return result.Error
 	}
 	return nil
 }

@@ -13,6 +13,9 @@ type ResurantsNearbyQuery struct {
 	Laty string
 }
 
+//TODO: paginacja
+// rozszerzyc model o zdjecie, opis, nazwe
+// trochę danych by coś było
 func GetRestaurantNearby(query ResurantsNearbyQuery, db *gorm.DB) ([]RestaurantNerbyDto, error) {
 	var restuarants []RestaurantNerbyDto
 	tx := db.Raw(`
