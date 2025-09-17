@@ -38,7 +38,7 @@ func MigrateModels() {
 		restaurant_id SERIAL PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		description VARCHAR(3000) NOT NULL,
-		streetName VARCHAR(430) NOT NULL,
+		street_name VARCHAR(430) NOT NULL,
 		city VARCHAR(420) NOT NULL,
 		geom GEOGRAPHY(Point, 4326) NOT NULL
         );
