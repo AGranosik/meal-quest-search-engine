@@ -63,6 +63,7 @@ func (m *MenuChangesConsumer) Consume(body []byte) error {
 }
 
 // TODO: REFACTOR
+// TODO: create restaurant if not exists
 func (m *MenuChangesConsumer) GetExchange() string {
 	return m.exchangeName
 }

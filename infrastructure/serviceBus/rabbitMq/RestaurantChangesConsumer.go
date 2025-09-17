@@ -70,7 +70,7 @@ func (consumer *RestaurantChangesConsumer) GetQueueName() string {
 }
 
 func convertToRestaurant(model RestaurantQueueModel) database.Restaurant {
-	geom := fmt.Sprintf("SRID=4326;POINT(%f %f)", model.Address.XAxis, model.Address.YAxis)
+	geom := fmt.Sprintf("SRID=4326;POINT(%f %f)", model.Address.YAxis, model.Address.XAxis)
 	return database.Restaurant{
 		RestaurantId: uint(model.ResutaurantId),
 		Description:  model.Description,
