@@ -47,8 +47,6 @@ func NewConsumer(exchangeName string, queueName string, database *gorm.DB) inter
 	}
 }
 
-//TODO: logo
-
 func (consumer *RestaurantChangesConsumer) Consume(body []byte) error {
 	var msg RabbitMqMessage
 	json.Unmarshal(body, &msg)
@@ -77,5 +75,6 @@ func convertToRestaurant(model RestaurantQueueModel) database.Restaurant {
 		City:         model.Address.City,
 		Name:         model.Name,
 		Geom:         geom,
+		Logo:         model.LogoData,
 	}
 }

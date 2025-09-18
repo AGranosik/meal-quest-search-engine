@@ -62,7 +62,6 @@ func (m *MenuChangesConsumer) Consume(body []byte) error {
 }
 
 // TODO: REFACTOR
-// TODO: nullable FK
 func (m *MenuChangesConsumer) GetExchange() string {
 	return m.exchangeName
 }

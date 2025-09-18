@@ -40,7 +40,8 @@ func MigrateModels() {
 		description VARCHAR(3000) NOT NULL,
 		street_name VARCHAR(430) NOT NULL,
 		city VARCHAR(420) NOT NULL,
-		geom GEOGRAPHY(Point, 4326) NOT NULL
+		geom GEOGRAPHY(Point, 4326) NOT NULL,
+		logo bytea NULL
         );
     `, database.RestaurantTableName))
 	if tx.Error != nil {
