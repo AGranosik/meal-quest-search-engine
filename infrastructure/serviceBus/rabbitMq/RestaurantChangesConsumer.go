@@ -56,7 +56,6 @@ func (consumer *RestaurantChangesConsumer) Consume(body []byte) error {
 	restaurantDb := convertToRestaurant(msg.Message)
 	result := consumer.database.Create(&restaurantDb)
 	if result.Error != nil {
-		fmt.Errorf(result.Error.Error())
 		return result.Error
 	}
 	return nil

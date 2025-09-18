@@ -56,14 +56,13 @@ func (m *MenuChangesConsumer) Consume(body []byte) error {
 
 	result := m.database.Create(&dbModel)
 	if result.Error != nil {
-		fmt.Errorf(result.Error.Error())
 		return result.Error
 	}
 	return nil
 }
 
 // TODO: REFACTOR
-// TODO: create restaurant if not exists
+// TODO: nullable FK
 func (m *MenuChangesConsumer) GetExchange() string {
 	return m.exchangeName
 }
@@ -82,8 +81,13 @@ func NewConsumer(exchangeName string, queueName string, database *gorm.DB) inter
 }
 
 func mapMenuQueueModelToMenu(dto MenuQueueModel) (database.Menu, error) {
+	var restaurantID *uint
+	if dto.RestaurantId != 0 {
+		tmp := uint(dto.RestaurantId)
+		restaurantID = &tmp
+	}
 	menu := database.Menu{
-		RestaurantID: uint(dto.RestaurantId),
+		RestaurantID: restaurantID,
 		Groups:       make([]database.Group, len(dto.Groups)),
 	}
 

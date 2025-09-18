@@ -8,8 +8,7 @@ const IngredientsTableName = "ingredients"
 
 type Menu struct {
 	ID           uint `gorm:"primaryKey"`
-	RestaurantID uint
-	Restaurant   Restaurant
+	RestaurantID *uint
 	Groups       []Group
 }
 
