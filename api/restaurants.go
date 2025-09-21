@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"main/application/queries"
+	"strconv"
 
 	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
@@ -15,10 +16,21 @@ func ConfigureRestaurantsEndpoints(db *gorm.DB) {
 	app.Get("/restaurant", func(c fiber.Ctx) error {
 		latx := c.Query("x")
 		laty := c.Query("y")
+		pageSize, err := strconv.Atoi(c.Query("pageSize"))
+		if err != nil {
+			return err
+		}
+
+		pageNumber, err := strconv.Atoi(c.Query("pageNumber"))
+		if err != nil {
+			return err
+		}
 
 		result, err := queries.GetRestaurantNearby(queries.ResurantsNearbyQuery{
-			Latx: latx,
-			Laty: laty,
+			Latx:       latx,
+			Laty:       laty,
+			PageSize:   pageSize,
+			PageNumber: pageNumber,
 		}, db)
 
 		if err != nil {
