@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type RestaurantNerbyQueryModel struct {
@@ -23,27 +24,42 @@ type RestaurantNerbyDto struct {
 }
 
 type ResurantsNearbyQuery struct {
-	Latx       string
-	Laty       string
-	PageSize   int
-	PageNumber int
+	Latx           string
+	Laty           string
+	PageSize       int
+	PageNumber     int
+	RestaurantName *string
 }
 
 func GetRestaurantNearby(query ResurantsNearbyQuery, db *gorm.DB) ([]RestaurantNerbyDto, error) {
-	var restuarants []RestaurantNerbyQueryModel
+	var restaurants []RestaurantNerbyQueryModel
 	offset := (query.PageNumber - 1) * query.PageSize
-	tx := db.Raw(`
-			SELECT restaurant_id, name, logo, description, ST_Distance(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography) AS distance
-			FROM public.restaurants
-			ORDER BY geom <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
-			LIMIT ? OFFSET ?
-			`, query.Latx, query.Laty, query.Latx, query.Laty, query.PageSize, offset).
-		Scan(&restuarants)
 
-	if tx.Error != nil {
-		return []RestaurantNerbyDto{}, tx.Error
+	// Base query
+	tx := db.Model(&RestaurantNerbyQueryModel{}).
+		Table("restaurants").
+		Select(`restaurant_id, name, logo, description,
+		        ST_Distance(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography) AS distance`,
+			query.Latx, query.Laty).
+		Clauses(clause.OrderBy{
+			Expression: clause.Expr{SQL: `geom <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography`, Vars: []interface{}{
+				query.Latx, query.Laty,
+			}},
+		}).
+		Limit(query.PageSize).
+		Offset(offset)
+
+	// Optional name filter
+	if query.RestaurantName != nil && *query.RestaurantName != "" {
+		tx = tx.Where("name ILIKE ?", "%"+*query.RestaurantName+"%")
 	}
-	return MapRestaurantsToDto(restuarants), tx.Error
+
+	// Execute
+	if err := tx.Scan(&restaurants).Error; err != nil {
+		return []RestaurantNerbyDto{}, err
+	}
+
+	return MapRestaurantsToDto(restaurants), nil
 }
 
 func MapRestaurantsToDto(restaurants []RestaurantNerbyQueryModel) []RestaurantNerbyDto {

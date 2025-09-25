@@ -26,11 +26,14 @@ func ConfigureRestaurantsEndpoints(db *gorm.DB) {
 			return err
 		}
 
+		restaurantName := c.Query("name")
+
 		result, err := queries.GetRestaurantNearby(queries.ResurantsNearbyQuery{
-			Latx:       latx,
-			Laty:       laty,
-			PageSize:   pageSize,
-			PageNumber: pageNumber,
+			Latx:           latx,
+			Laty:           laty,
+			PageSize:       pageSize,
+			PageNumber:     pageNumber,
+			RestaurantName: &restaurantName,
 		}, db)
 
 		if err != nil {
