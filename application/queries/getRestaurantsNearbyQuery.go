@@ -42,7 +42,7 @@ func GetRestaurantNearby(query ResurantsNearbyQuery, db *gorm.DB) ([]RestaurantN
 		        ST_Distance(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography) AS distance`,
 			query.Latx, query.Laty).
 		Clauses(clause.OrderBy{
-			Expression: clause.Expr{SQL: `geom <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography`, Vars: []interface{}{
+			Expression: clause.Expr{SQL: `geom <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography`, Vars: []any{
 				query.Latx, query.Laty,
 			}},
 		}).
